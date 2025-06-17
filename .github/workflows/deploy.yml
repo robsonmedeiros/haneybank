@@ -17,20 +17,25 @@ jobs:
       - name: Checkout do repositório
         uses: actions/checkout@v4
 
-      - name: Validação de HTML
-        uses: Cyb3r-Jak3/html5validator-action@v0.4.0
-        with:
-          root: .
+      - name: Instalar validador HTML
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jre
+          pip install html5validator
+
+      - name: Validar HTML
+        run: |
+          html5validator --root .
 
       - name: Lint de CSS com Stylelint
         run: |
           npm install -g stylelint stylelint-config-standard
-          echo 'module.exports = { extends: "stylelint-config-standard" }' > stylelint.config.js
-          stylelint "**/*.css" || true
+          echo 'module.exports = { extends: \"stylelint-config-standard\" }' > stylelint.config.js
+          stylelint \"**/*.css\" || true
 
       - name: Verificação de integridade e tamanho do index.html
         run: |
-          echo "Tamanho do index.html:"
+          echo \"Tamanho do index.html:\"
           du -h index.html
           test $(wc -c < index.html) -lt 1000000
 
